@@ -46,26 +46,17 @@ module.exports = (env, argv) => {
       }),
     ],
     module: {
+      noParse: /pyodide\.js/,
       rules: [
-        // Treat pyodide.js as a string. We do this to avoid webpack processing the
-        // javascript inside the file. pyodide is built with emscripten, contains its own
-        // filesystem, process, require, etc... If webpack tries to process it you get a lot
-        // or errors. While you *can* fix the errors you may cause unwanted side-effects doing so.
+        // Remove pyodide globals. They are not necessary when using pyodide in webpack
         {
-          test: /pyodide\.js$/,
-          type: "asset/source",
-        },
-        // Replace the call to require("pyodide") with our own file that wraps the require call. We
-        // do this to evaluate the string we produced in the above rule as well as to handle the returned
-        // object correctly and remove loadPyodide from the global scope.
-        {
-          test: /src\/.+\.js$/,
+          test: /pyodide\/.+\.js$/,
           loader: "string-replace-loader",
           options: {
             multiple: [
               {
-                search: /require\(['"]pyodide['"]\)/g,
-                replace: fs.readFileSync(path.resolve(__dirname, "webpack", "modules", "pyodide.js"), "utf-8"),
+                search: "globalThis.loadPyodide=loadPyodide",
+                replace: "({})",
               },
             ],
           },

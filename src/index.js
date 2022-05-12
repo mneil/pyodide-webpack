@@ -1,4 +1,4 @@
-const loadPyodide = require("pyodide");
+const { loadPyodide } = require("pyodide");
 
 async function init() {
   const pyodide = await loadPyodide({ indexURL: `${window.location.origin}/pyodide` });
