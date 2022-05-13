@@ -3,8 +3,9 @@
  * This is a temporary "hack" to export correct packages from pyodide.
  * When this is fixed upstream we can delete
  */
+const webpack = require("./webpack.config");
 const fs = require("fs");
-const packagePath = require.resolve("pyodide/package.json");
+const packagePath = require.resolve(`${webpack.pyodidePackage}/package.json`);
 const packageJson = require(packagePath);
 packageJson.exports = {
   "./distutils.tar": "./distutils.tar",
