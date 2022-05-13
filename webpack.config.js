@@ -1,6 +1,7 @@
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 
+const pyodideVersion = "0.20.0";
 // Allow us to change the pyodide package name for publishing temporary packages
 // ourselves without waiting for an official deployment. In most cases do
 // not change this or worry about it.
@@ -50,7 +51,7 @@ module.exports = (env, argv) => {
               transformer: (input) => {
                 return input
                   .toString()
-                  .replace("new URL(indexURL", "new URL('https://cdn.jsdelivr.net/pyodide/v0.20.0/full/'");
+                  .replace("new URL(indexURL", `new URL('https://cdn.jsdelivr.net/pyodide/v${pyodideVersion}/full/'`);
               },
             },
           },
