@@ -1,11 +1,5 @@
 const path = require("path");
-const CopyPlugin = require("copy-webpack-plugin");
-
-const pyodideVersion = "0.20.0";
-// Allow us to change the pyodide package name for publishing temporary packages
-// ourselves without waiting for an official deployment. In most cases do
-// not change this or worry about it.
-const pyodidePackage = "pyodide";
+const { PyodidePlugin } = require("pyodide-webpack-plugin");
 
 module.exports = (env, argv) => {
   return {
@@ -35,55 +29,8 @@ module.exports = (env, argv) => {
       static: [{ directory: path.join(__dirname, "public") }],
       compress: true,
       port: 9000,
-      open: true,
+      //open: true,
     },
-    plugins: [
-      // Copy files pyodide.js will load asynchronously
-      new CopyPlugin({
-        patterns: [
-          { from: require.resolve(`${pyodidePackage}/distutils.tar`), to: "pyodide/distutils.tar" },
-          { from: require.resolve(`${pyodidePackage}/packages.json`), to: "pyodide/packages.json" },
-          { from: require.resolve(`${pyodidePackage}/pyodide_py.tar`), to: "pyodide/pyodide_py.tar" },
-          {
-            from: require.resolve(`${pyodidePackage}/pyodide.asm.js`),
-            to: "pyodide/pyodide.asm.js",
-            transform: {
-              transformer: (input) => {
-                return input
-                  .toString()
-                  .replace("new URL(indexURL", `new URL('https://cdn.jsdelivr.net/pyodide/v${pyodideVersion}/full/'`);
-              },
-            },
-          },
-          { from: require.resolve(`${pyodidePackage}/pyodide.asm.data`), to: "pyodide/pyodide.asm.data" },
-          { from: require.resolve(`${pyodidePackage}/pyodide.asm.wasm`), to: "pyodide/pyodide.asm.wasm" },
-        ],
-      }),
-    ],
-    resolve: {
-      alias: {
-        pyodide: require.resolve(pyodidePackage),
-      },
-    },
-    module: {
-      noParse: /pyodide\/.+\.js$/,
-      rules: [
-        // Remove pyodide globals. They are not necessary when using pyodide in webpack
-        {
-          test: /pyodide\/.+\.js$/,
-          loader: "string-replace-loader",
-          options: {
-            multiple: [
-              {
-                search: "globalThis.loadPyodide=loadPyodide",
-                replace: "({})",
-              },
-            ],
-          },
-        },
-      ],
-    },
+    plugins: [new PyodidePlugin()],
   };
 };
-
-module.exports.pyodidePackage = pyodidePackage;

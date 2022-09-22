@@ -1,14 +1,11 @@
 {
   "name": "pyodide-webpack",
   "scripts": {
-    "postinstall": "node ./patch.js",
     "dev": "webpack serve --mode development",
     "build": "webpack"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^10.2.4",
-    "pyodide": "^0.20.1-alpha.2",
-    "string-replace-loader": "^3.1.0",
+    "pyodide": "^0.21.3",
     "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4"
